@@ -1,2 +1,2 @@
 # consulProm
-e2e test architecture for consul and gcp service discovery mechanism 
+e2e test architecture for consul service discovery mechanism 
