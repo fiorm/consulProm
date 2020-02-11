@@ -13,5 +13,5 @@ helm install -f consul-helm/helm-consul-values.yml hashicorp ./consul-helm
 
 minikube service hashicorp-consul-ui
 
-
+// right now in discovery its just a copy of prometheues manager.go and its test , eventually we will delete that and call its api only 
 
