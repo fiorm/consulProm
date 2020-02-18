@@ -39,9 +39,6 @@ func registerServiceWithConsul() {
 	}
 	registration.Port = port
 	registration.Check = new(consulapi.AgentServiceCheck)
-	registration.Check.HTTP = fmt.Sprintf("http://%s:%v/healthcheck", port)
-	registration.Check.Interval = "5s"
-	registration.Check.Timeout = "3s"
 	consul.Agent().ServiceRegister(registration)
 }
 
