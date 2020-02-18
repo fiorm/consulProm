@@ -12,10 +12,10 @@ import (
 	consulapi "github.com/hashicorp/consul/api"
 )
 
-type service struct {
-	ID    uint64  `json:"id"`
-	Name  string  `json:"name"`
-	Price float64 `json:"price"`
+type demoservice struct {
+	ID   uint64 `json:"id"`
+	Name string `json:"name"`
+	Desc string `json:"price"`
 }
 
 type ServiceConfiguration struct {
@@ -31,17 +31,15 @@ func registerServiceWithConsul() {
 
 	registration := new(consulapi.AgentServiceRegistration)
 
-	registration.ID = "service"
-	registration.Name = "service"
-	address := hostname()
-	registration.Address = address
+	registration.ID = "demoservice"
+	registration.Name = "demoservice"
 	port, err := strconv.Atoi(port()[1:len(port())])
 	if err != nil {
 		log.Fatalln(err)
 	}
 	registration.Port = port
 	registration.Check = new(consulapi.AgentServiceCheck)
-	registration.Check.HTTP = fmt.Sprintf("http://%s:%v/healthcheck", address, port)
+	registration.Check.HTTP = fmt.Sprintf("http://%s:%v/healthcheck", port)
 	registration.Check.Interval = "5s"
 	registration.Check.Timeout = "3s"
 	consul.Agent().ServiceRegister(registration)
@@ -54,7 +52,7 @@ func Configuration(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "Error. %s", err)
 		return
 	}
-	kvpair, _, err := consul.KV().Get("service-configuration", nil)
+	kvpair, _, err := consul.KV().Get("demoservice-configuration", nil)
 	if err != nil {
 		fmt.Fprintf(w, "Error. %s", err)
 		return
@@ -69,28 +67,28 @@ func Configuration(w http.ResponseWriter, r *http.Request) {
 }
 
 func Services(w http.ResponseWriter, r *http.Request) {
-	services := []service{
+	demoservices := []demoservice{
 		{
-			ID:    1,
-			Name:  "Macbook",
-			Price: 2000000.00,
+			ID:   1,
+			Name: "demoService",
+			Desc: "demo service",
 		},
 	}
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(&services)
+	json.NewEncoder(w).Encode(&demoservices)
 }
 
 func main() {
 	registerServiceWithConsul()
 	http.HandleFunc("/healthcheck", healthcheck)
-	http.HandleFunc("/services", Services)
-	http.HandleFunc("/service/config", Configuration)
-	fmt.Printf("service service is up on port: %s", port())
+	http.HandleFunc("/demoservices", Services)
+	http.HandleFunc("/demoservice/config", Configuration)
+	fmt.Printf("demoservice demoservice is up on port: %s", port())
 	http.ListenAndServe(port(), nil)
 }
 
 func healthcheck(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, `service service is good`)
+	fmt.Fprintf(w, `demoservice demoservice is good`)
 }
 
 func port() string {
@@ -100,14 +98,4 @@ func port() string {
 		return ":8100"
 	}
 	return fmt.Sprintf("%s:%s", h, p)
-}
-
-func hostname() string {
-	// return os.Getenv("CONSUL_HTTP_ADDR")
-	hn, err := os.Hostname()
-	fmt.Println(hn)
-	if err != nil {
-		log.Fatalln(err)
-	}
-	return hn
 }
