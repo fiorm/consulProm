@@ -78,15 +78,6 @@ func Services(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(&demoservices)
 }
 
-func main() {
-	registerServiceWithConsul()
-	http.HandleFunc("/healthcheck", healthcheck)
-	http.HandleFunc("/demoservices", Services)
-	http.HandleFunc("/demoservice/config", Configuration)
-	fmt.Printf("demoservice demoservice is up on port: %s", port())
-	http.ListenAndServe(port(), nil)
-}
-
 func healthcheck(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, `demoservice demoservice is good`)
 }
@@ -99,3 +90,14 @@ func port() string {
 	}
 	return fmt.Sprintf("%s:%s", h, p)
 }
+
+func main() {
+	registerServiceWithConsul()
+	http.HandleFunc("/healthcheck", healthcheck)
+	http.HandleFunc("/demoservices", Services)
+	http.HandleFunc("/demoservice/config", Configuration)
+	fmt.Printf("demoservice demoservice is up on port: %s", port())
+	http.ListenAndServe(port(), nil)
+}
+
+// todo : now call the prom discovery manager and try to get the service in it
