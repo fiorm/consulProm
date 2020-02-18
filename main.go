@@ -101,3 +101,4 @@ func main() {
 }
 
 // todo : now call the prom discovery manager and try to get the service in it
+// todo : remove the service as in deregister it from main and see if its really updated in discovery interface
